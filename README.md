@@ -1,7 +1,8 @@
 # EM::FileUtils
 
-`EM::FileUtils` provides a simple API to make invoke filesystem
-commands in eventmachine.
+`EM::FileUtils` attempts to mimic the behavoir of the filesystem API
+of the Ruby stdlib. In the background it invokes linux/unix system
+commands via the `em-systemcommand` gem.
 
 ## Installation
 
