@@ -2,7 +2,7 @@
 module EventMachine
   class FilesystemCommand < EM::SystemCommand
 
-    PROGRESS_REGEXP = /([A-Za-z0-9\.\-]+)\n[ ]+(\d+)/.freeze
+    PROGRESS_REGEXP = /([A-Za-z0-9\.\-\/]+)\n[ ]+(\d+)/.freeze
 
     class << self
 
@@ -10,23 +10,27 @@ module EventMachine
       # Invokes an `rsync` copy-like command.
       def copy *args, &block
         options = { }.merge args.extract_options!
-        cmd = FilesystemCommand.new 'rsync', '--progress', *args
+        cmd = FilesystemCommand.new 'rsync'
+        cmd << '--progress'
+        cmd << '-r' if options[:recursive]
+        cmd << args
         cmd.execute &block
       end
 
       ##
       # Invokes an `rsync` move-like command.
-      def move
+      def move *args, &block
         options = { }.merge args.extract_options!
         cmd = FilesystemCommand.new 'rsync'
         cmd << '--progress'
         cmd << '--remove-source-files'
-        cmd << '--force'
+        cmd << '-r'
         cmd << args
         cmd.execute &block
       end
 
     end
+
 
     ##
     # Invokes `#execute` of super-class and adds a progress matcher.
