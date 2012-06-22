@@ -12,10 +12,14 @@ EventMachine.instance_eval do
   end
 end unless EM.respond_to?(:assertions)
 
-unless File.exists?(File.join(SPEC_ROOT, 'data', 'test'))
+unless File.exists?(File.join(SPEC_ROOT, 'data', 'test')) and
+    File.exists?(File.join(SPEC_ROOT, 'data', 'test2')) and
+    File.exists?(File.join(SPEC_ROOT, 'data', 'test3'))
   puts "Creating test dummy data"
   system "mkdir -p #{File.join(SPEC_ROOT, 'data')}"
-  system "dd if=/dev/urandom of=#{File.join(SPEC_ROOT, 'data', 'test')} bs=1024 count=1000000"
+  system "dd if=/dev/urandom of=#{File.join(SPEC_ROOT, 'data', 'test')} bs=1024 count=100"
+  system "dd if=/dev/urandom of=#{File.join(SPEC_ROOT, 'data', 'test2')} bs=1024 count=100"
+  system "dd if=/dev/urandom of=#{File.join(SPEC_ROOT, 'data', 'test3')} bs=1024 count=100"
 end
 
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
