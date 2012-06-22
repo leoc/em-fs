@@ -36,6 +36,8 @@ module EventMachine
       stdout.match PROGRESS_REGEXP, match: :last, in: :output do |file, bytes|
         receive_progress file, bytes.to_i
       end
+
+      self
     end
 
     ##
