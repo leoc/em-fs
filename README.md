@@ -1,14 +1,21 @@
-# EM::FileUtils
+# EM::FS
+
+`EM::FS` provides a simple interface to gain simple filesystem access
+in eventmachine via `EM::SystemCommand`.
 
 `EM::FileUtils` attempts to mimic the behavoir of the filesystem API
 of the Ruby stdlib. In the background it invokes linux/unix system
-commands via the `em-systemcommand` gem.
+commands - like `rsync`, `mkdir` etc. - via the `em-systemcommand`
+gem.
+
+Furthermore `EM::Dir` and `EM::File` provide methods to crawl
+directory structures via `find` command without blocking the reactor.
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
-    gem 'em_fileutils'
+    gem 'em-fs'
 
 And then execute:
 
@@ -16,14 +23,30 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install em_fileutils
+    $ gem install em-fs
 
 ## Usage
 
-Essentially the idea is to provide a similar API to what the Ruby
-Stdlib is providing. Just that you get back a EM::FilesystemCommand on
-which you can call asynchronous methods like `#watch`, `#success`,
-`#readline`, `#progess` and so on.
+### FileUtils
+
+`EM::FileUtils` basically provides an API similar to the `FileUtils`
+class in the Ruby stdlib.
+
+Have a look at the documentation.
+
+### Crawl Directory Structures
+
+    EM::Dir['./**/*.*'].each do |stat|
+      puts stat.size
+    end
+    
+    EM::Dir['./**/*.lisp'].each_entry do |entry|
+      
+    end
+    
+    EM::Dir['./**/*.rb'].each_path do |path|
+      
+    end
 
 ## Contributing
 
