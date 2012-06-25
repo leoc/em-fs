@@ -135,13 +135,8 @@ describe EM::FileUtils do
       before :all do
         @source = File.join SPEC_ROOT, 'data', 'test'
         @target = File.join SPEC_ROOT, 'data', 'test.copy'
-        @progress_updates = {}
         EM.run do
           EM::FileUtils.cp @source, @target do |on|
-            on.progress do |file, bytes|
-              (@progress_updates[file] ||= []) << bytes
-            end
-
             on.exit do |status|
               EM.stop_event_loop
               raise on.stderr.output if status.exitstatus != 0
@@ -157,11 +152,6 @@ describe EM::FileUtils do
       it 'should create a copy' do
         File.should exist @target
       end
-
-      it 'should update progress' do
-        @progress_updates['test'].length.should be > 0
-        @progress_updates['test'].last.should == 102400
-      end
     end
 
     context 'copying multiple files to folder' do
@@ -170,13 +160,8 @@ describe EM::FileUtils do
         @source2 = File.join SPEC_ROOT, 'data', 'test2'
         @source3 = File.join SPEC_ROOT, 'data', 'test3'
         @target = File.join SPEC_ROOT, 'data', 'test.dir'
-        @progress_updates = {}
         EM.run do
           EM::FileUtils.cp @source1, @source2, @source3, @target do |on|
-            on.progress do |file, bytes|
-              (@progress_updates[file] ||= []) << bytes
-            end
-
             on.exit do |status|
               EM.stop_event_loop
               raise on.stderr.output if status.exitstatus != 0
@@ -196,21 +181,11 @@ describe EM::FileUtils do
         File.should exist File.join(@target, 'test2')
         File.should exist File.join(@target, 'test3')
       end
-
-      it 'should update progress' do
-        @progress_updates['test'].length.should be > 0
-        @progress_updates['test'].last.should == 102400
-        @progress_updates['test2'].length.should be > 0
-        @progress_updates['test2'].last.should == 102400
-        @progress_updates['test3'].length.should be > 0
-        @progress_updates['test3'].last.should == 102400
-      end
     end
   end
 
   describe '.cp_r' do
     before :all do
-      @progress_updates = {}
       @source_dir = File.join(SPEC_ROOT, 'data', 'source.dir/')
       @target_dir = File.join(SPEC_ROOT, 'data', 'target.dir')
       FileUtils.mkdir_p @source_dir
@@ -222,10 +197,6 @@ describe EM::FileUtils do
 
       EM.run do
         EM::FileUtils.cp_r @source_dir, @target_dir do |on|
-          on.progress do |file, bytes|
-            (@progress_updates[file] ||= []) << bytes
-          end
-
           on.exit do |status|
             EM.stop_event_loop
             raise on.stderr.output if status.exitstatus != 0
@@ -244,30 +215,16 @@ describe EM::FileUtils do
       File.should exist File.join(@target_dir, 'test2')
       File.should exist File.join(@target_dir, 'test3')
     end
-
-    it 'should update progress infos' do
-      @progress_updates['test'].length.should be > 0
-      @progress_updates['test'].last.should == 102400
-      @progress_updates['test2'].length.should be > 0
-      @progress_updates['test2'].last.should == 102400
-      @progress_updates['test3'].length.should be > 0
-      @progress_updates['test3'].last.should == 102400
-    end
   end
 
   describe '.mv' do
     context 'moving one file' do
       before :all do
-        @progress_updates = {}
         @source = File.join(SPEC_ROOT, 'data', 'test')
         @target = File.join(SPEC_ROOT, 'data', 'moved_test')
 
         EM.run do
           EM::FileUtils.mv @source, @target do |on|
-            on.progress do |file, bytes|
-              (@progress_updates[file] ||= []) << bytes
-            end
-
             on.exit do |status|
               EM.stop_event_loop
               raise on.stderr.output if status.exitstatus != 0
@@ -291,7 +248,6 @@ describe EM::FileUtils do
 
     context 'moving multiple files' do
       before :all do
-        @progress_updates = {}
         @source = File.join(SPEC_ROOT, 'data', 'test')
         @source2 = File.join(SPEC_ROOT, 'data', 'test2')
         @source3 = File.join(SPEC_ROOT, 'data', 'test3')
@@ -299,10 +255,6 @@ describe EM::FileUtils do
 
         EM.run do
           EM::FileUtils.mv @source, @source2, @source3, @target_dir do |on|
-            on.progress do |file, bytes|
-              (@progress_updates[file] ||= []) << bytes
-            end
-
             on.exit do |status|
               EM.stop_event_loop
               raise on.stderr.output if status.exitstatus != 0
@@ -327,20 +279,10 @@ describe EM::FileUtils do
         File.should_not exist @source2
         File.should_not exist @source3
       end
-
-      it 'should update progresses' do
-        @progress_updates['test'].length.should be > 0
-        @progress_updates['test'].last.should == 102400
-        @progress_updates['test2'].length.should be > 0
-        @progress_updates['test2'].last.should == 102400
-        @progress_updates['test3'].length.should be > 0
-        @progress_updates['test3'].last.should == 102400
-      end
     end
 
     context 'moving directories' do
       before :all do
-        @progress_updates = {}
         @source_dir = File.join(SPEC_ROOT, 'data', 'source.dir/')
         @target_dir = File.join(SPEC_ROOT, 'data', 'target.dir')
         FileUtils.mkdir_p @source_dir
@@ -352,10 +294,6 @@ describe EM::FileUtils do
 
         EM.run do
           EM::FileUtils.mv @source_dir, @target_dir do |on|
-            on.progress do |file, bytes|
-              (@progress_updates[file] ||= []) << bytes
-            end
-
             on.exit do |status|
               EM.stop_event_loop
               raise on.stderr.output if status.exitstatus != 0
