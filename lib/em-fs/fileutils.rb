@@ -59,7 +59,10 @@ module EventMachine
           raise 'Too few arguments. Need source and destination at least.'
         end
 
-        EM::FilesystemCommand.copy *args, options, &block
+        cmd = EM::SystemCommand.new 'cp'
+        cmd << :r if options[:recursive]
+        cmd << args
+        cmd.execute &block
       end
 
       ##
@@ -77,7 +80,9 @@ module EventMachine
           raise 'Too few arguments. Need source and destination at least.'
         end
 
-        EM::FilesystemCommand.move *args, options, &block
+        cmd = EM::SystemCommand.new 'mv'
+        cmd << args
+        cmd.execute &block
       end
 
       ##

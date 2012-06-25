@@ -159,7 +159,10 @@ describe EM::FileUtils do
         @source1 = File.join SPEC_ROOT, 'data', 'test'
         @source2 = File.join SPEC_ROOT, 'data', 'test2'
         @source3 = File.join SPEC_ROOT, 'data', 'test3'
-        @target = File.join SPEC_ROOT, 'data', 'test.dir'
+        @target = File.join SPEC_ROOT, 'data', 'test_dir'
+
+        FileUtils.mkdir_p @target
+
         EM.run do
           EM::FileUtils.cp @source1, @source2, @source3, @target do |on|
             on.exit do |status|
@@ -251,7 +254,9 @@ describe EM::FileUtils do
         @source = File.join(SPEC_ROOT, 'data', 'test')
         @source2 = File.join(SPEC_ROOT, 'data', 'test2')
         @source3 = File.join(SPEC_ROOT, 'data', 'test3')
-        @target_dir = File.join(SPEC_ROOT, 'data', 'target_dir')
+        @target_dir = File.join(SPEC_ROOT, 'data', 'target_dir/')
+
+        FileUtils.mkdir_p @target_dir
 
         EM.run do
           EM::FileUtils.mv @source, @source2, @source3, @target_dir do |on|
