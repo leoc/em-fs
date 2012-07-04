@@ -4,7 +4,6 @@ module EventMachine
 
       STAT_REGEX = /(\d+) (\d+) (\d+) (\d+) (\h+) '([\w\/ ]+)' (\d+) (\d+) (\d+) '(.+)' '(.+)' (\d+) (\d+) (\h+) (\h+) (\d+) (\d+) (\d+) (\d+) (\d+)/.freeze
       STAT_FORMAT = "%a %b %B %d %f '%F' %g %h %i '%m' '%n' %o %s %t %T %u %W %X %Y %Z"
-      FIND_FORMAT = ""
 
       # Types
       S_IFBLK   = 0b00000001 # block device
