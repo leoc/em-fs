@@ -2,8 +2,30 @@ module EventMachine
   class File
     class Stat
 
-      STAT_REGEX = /(\d+) (\d+) (\d+) (\d+) (\h+) '([\w\/ ]+)' (\d+) (\d+) (\d+) '(.+)' '(.+)' (\d+) (\d+) (\h+) (\h+) (\d+) (\d+) (\d+) (\d+) (\d+)/.freeze
-      STAT_FORMAT = "%a %b %B %d %f '%F' %g %h %i '%m' '%n' %o %s %t %T %u %W %X %Y %Z"
+      STAT_REGEX = /(\d+) (\d+) '([\w\/ ]+)' (\d+) (\d+) (\d+) '(.+)' (\d+) (\d+) ([\d.]+) ([\d.]+) ([\d.]+)/.freeze
+
+      # access rights octal
+      # ---number of blocks allocated
+      # ---the size in bytes of each block reported by %b
+      # device number in decimal
+      # ---raw mode in hex
+      # file type
+      # group id
+      # number of hardlinks
+      # inode number
+      # ---mount point
+      # file name
+      # ---optimal IO transfer size hint
+      # total size in bytes
+      # --major device type in hex
+      # --minor device type in hex
+      # user id
+      # --time of birth
+      # time of last access
+      # time of last mod
+      # time of last change
+      STAT_FORMAT =
+        "%a %d '%F' %g %h %i '%n' %s %u %X %Y %Z"
 
       # Types
       S_IFBLK   = 0b00000001 # block device
@@ -35,7 +57,7 @@ module EventMachine
         # @return [EM::File::Stat] The file stat object.
         def parse str
           if m = str.match(STAT_REGEX)
-            ftype = case m[6]
+            ftype = case m[3]
                     when 'block device' then S_IFBLK
                     when 'character device' then S_IFCHR
                     when 'directory' then S_IFDIR
@@ -46,43 +68,32 @@ module EventMachine
                     else
                       S_UNKNOWN
                     end
-            EM::File::Stat.new path:  m[11],
-                               mountpoint: m[10],
-                               atime: Time.at(Integer(m[18], 10)),
-                               blksize: Integer(m[3], 10),
-                               blocks: Integer(m[2], 10),
-                               ctime: Time.at(Integer(m[20], 10)),
-                               dev: Integer(m[4], 10),
-                               dev_major: Integer(m[14], 8),
-                               dev_minor: Integer(m[15], 8),
+            EM::File::Stat.new path:  m[7],
+                               atime: Time.at(Integer(m[10].split('.')[0], 10)),
+                               ctime: Time.at(Integer(m[12].split('.')[0], 10)),
+                               dev:   Integer(m[2], 10),
                                ftype: ftype,
-                               gid: Integer(m[7], 10),
-                               ino: Integer(m[9], 10),
-                               mode: Integer(m[1], 8),
-                               mtime: Time.at(Integer(m[19], 10)),
-                               nlink: Integer(m[8], 10),
-                               size: Integer(m[13], 10),
-                               uid: Integer(m[16], 10)
+                               gid:   Integer(m[4], 10),
+                               ino:   Integer(m[6], 10),
+                               mode:  Integer(m[1], 8),
+                               mtime: Time.at(Integer(m[11].split('.')[0], 10)),
+                               nlink: Integer(m[5], 10),
+                               size:  Integer(m[8], 10),
+                               uid:   Integer(m[9], 10)
           else
             raise "Unable to parse stat string: #{str}"
           end
         end
       end
 
-      attr_reader :path, :mountpoint, :atime, :blksize, :blocks, :ctime,
-                  :dev, :dev_major, :dev_minor, :ftype, :gid, :ino, :mtime,
-                  :nlink, :size, :uid
+      attr_reader :path, :atime, :ctime, :dev, :ftype, :gid,
+                  :ino, :mtime, :nlink, :size, :uid
 
       def initialize val = {}
         @path       = val[:path]
-        @mountpoint = val[:mountpoint]
         @atime      = val[:atime]
-        @blksize    = val[:blksize]
-        @blocks     = val[:blocks]
         @ctime      = val[:ctime]
         @dev        = val[:dev]
-        @dev_major  = val[:dev_major]
-        @dev_minor  = val[:dev_minor]
         @ftype      = val[:ftype]
         @gid        = val[:gid]
         @ino        = val[:ino]
