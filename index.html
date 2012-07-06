@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="EM::FS : A simple interface to gain file system access in eventmachine." />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>EM::FS</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/leoc/em-fs">View on GitHub</a>
+
+          <h1 id="project_title">EM::FS</h1>
+          <h2 id="project_tagline">A simple interface to gain file system access in eventmachine.</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/leoc/em-fs/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/leoc/em-fs/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <p><code>EM::FS</code> provides a simple interface to gain simple filesystem access
+in eventmachine via <code>EM::SystemCommand</code>.</p>
+
+<p><code>EM::FileUtils</code> attempts to mimic the behavoir of the filesystem API
+of the Ruby stdlib. In the background it invokes linux/unix system
+commands - like <code>rsync</code>, <code>mkdir</code> etc. - via the <code>em-systemcommand</code>
+gem.</p>
+
+<p>Furthermore <code>EM::Dir</code> and <code>EM::File</code> provide abstractions to crawl
+directory structures via <code>find</code> command without blocking the reactor.</p>
+
+<h2>Installation</h2>
+
+<p>Add this line to your application's Gemfile:</p>
+
+<pre><code>gem 'em-fs'
+</code></pre>
+
+<p>And then execute:</p>
+
+<pre><code>$ bundle
+</code></pre>
+
+<p>Or install it yourself as:</p>
+
+<pre><code>$ gem install em-fs
+</code></pre>
+
+<h2>Usage</h2>
+
+<h3>
+<code>EM::FS</code> using <code>rsync</code> and <code>find</code>
+</h3>
+
+<p>To invoke bare commands you can either use <code>EM::SystemCommand</code>
+directly or the methods <code>EM::FS.rsync</code> and <code>EM::FS.find</code>.</p>
+
+<h3>
+<code>EM::FileUtils</code> for simple filesystem operations</h3>
+
+<p>The <code>FileUtils</code> methods from the Ruby Standard Library may block the
+eventmachine reactor. That´s why <code>em-fs</code> uses <code>EM::SystemCommand</code> to
+provide a similar non-blocking feature set.</p>
+
+<pre><code>EM.run do
+  EM::FileUtils.cp 'some_file', 'some_copy' do |on|
+    on.exit do |status|
+      puts 'Copied!'
+    end
+  end
+end
+</code></pre>
+
+<p>For a full list of methods, have a look at the documentation.</p>
+
+<h3>Abstraction via <code>EM::Dir</code> and <code>EM::File</code>
+</h3>
+
+<p><code>EM::Dir[]</code> returns a <code>EM::Dir::Glob</code> object, containing the
+information for the <code>find</code> command. On this object you can invoke
+multiple methods to see the resulting filesystem objects:</p>
+
+<pre><code>EM::Dir['./**/*.*'].each do |stat|
+  puts "Some stat: #{stat.inspect}"
+end
+
+EM::Dir['./**/*.lisp'].each_entry do |entry|
+  puts "Some entry: #{entry}"
+end
+
+EM::Dir['./**/*.rb'].each_path do |path|
+  puts "Some path: #{path}"
+end
+</code></pre>
+
+<h2>Contributing</h2>
+
+<ol>
+<li>Fork it</li>
+<li>Create your feature branch (<code>git checkout -b my-new-feature</code>)</li>
+<li>Commit your changes (<code>git commit -am 'Added some feature'</code>)</li>
+<li>Push to the branch (<code>git push origin my-new-feature</code>)</li>
+<li>Create new Pull Request</li>
+</ol>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">EM::FS maintained by <a href="https://github.com/leoc">leoc</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
