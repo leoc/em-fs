@@ -13,7 +13,7 @@ Gem::Specification.new do |gem|
   gem.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   gem.name          = "em-fs"
   gem.require_paths = ["lib"]
-  gem.version       = EM::FS::VERSION
+  gem.version       = EventMachine::FS::VERSION
 
   gem.add_development_dependency 'rake'
   gem.add_development_dependency 'rspec'
