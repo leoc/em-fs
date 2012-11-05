@@ -6,7 +6,13 @@ module EventMachine
 
       def initialize pattern
         @weight = nil
+        @type = nil
+        @callback = proc{}
         parse pattern
+      end
+
+      def callback &block
+        @callback = block
       end
 
       def parse pattern
@@ -34,11 +40,16 @@ module EventMachine
 
       def each options = {}, &block
         options = {
-          depth: :inf
+          depth: :inf,
+          type: :all
         }.merge options
+
         EM::SystemCommand.execute find_command(options) do |on|
           on.stdout.line do |line|
             block.call File::Stat.parse line
+          end
+          on.success do
+            @callback.call
           end
         end
       end
@@ -64,7 +75,8 @@ module EventMachine
       private
       def find_command options = {}
         options = {
-          depth: (@weight || :inf)
+          depth: (@weight || :inf),
+          type: (@type || :all)
         }.merge options
 
         builder = EM::SystemCommand::Builder.new 'find'
@@ -72,6 +84,7 @@ module EventMachine
         builder << [ :path, @path ] unless @path == "*" or @path == ''
         builder << [ :name, @name ] unless @name == "*"
         builder << [ :maxdepth, options[:depth] ] unless options[:depth] == :inf
+        builder << [ :type, options[:type] ] unless options[:type] == :all
         builder << [ :printf, FORMAT ]
         builder.to_s.gsub(/-+(\w)/, "-\\1")
       end
