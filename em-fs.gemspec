@@ -22,5 +22,6 @@ Gem::Specification.new do |gem|
 
   gem.add_dependency 'eventmachine'
   gem.add_dependency 'em-systemcommand'
+  gem.add_dependency 'escape'
 
 end
