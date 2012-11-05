@@ -43,14 +43,14 @@ describe EM::Dir::Glob do
 
       it 'should execute the block for each entry' do
         @entries.should == [
-                            "/home/arthur/projects/em-fs/spec/data",
-                            "/home/arthur/projects/em-fs/spec/data/b",
-                            "/home/arthur/projects/em-fs/spec/data/c",
-                            "/home/arthur/projects/em-fs/spec/data/test2",
-                            "/home/arthur/projects/em-fs/spec/data/test",
-                            "/home/arthur/projects/em-fs/spec/data/a",
-                            "/home/arthur/projects/em-fs/spec/data/test3"
-                           ]
+                            "data",
+                            "data/b",
+                            "data/c",
+                            "data/test2",
+                            "data/test",
+                            "data/a",
+                            "data/test3"
+                           ].map {|e| File.join(SPEC_ROOT, e)}
       end
     end
 
@@ -71,19 +71,19 @@ describe EM::Dir::Glob do
 
       it 'should execute the block for each entry and directory´s entry' do
         @entries.should == [
-                            "/home/arthur/projects/em-fs/spec/data",
-                            "/home/arthur/projects/em-fs/spec/data/b",
-                            "/home/arthur/projects/em-fs/spec/data/b/b",
-                            "/home/arthur/projects/em-fs/spec/data/b/x",
-                            "/home/arthur/projects/em-fs/spec/data/b/a",
-                            "/home/arthur/projects/em-fs/spec/data/c",
-                            "/home/arthur/projects/em-fs/spec/data/c/a",
-                            "/home/arthur/projects/em-fs/spec/data/test2",
-                            "/home/arthur/projects/em-fs/spec/data/test",
-                            "/home/arthur/projects/em-fs/spec/data/a",
-                            "/home/arthur/projects/em-fs/spec/data/a/x",
-                            "/home/arthur/projects/em-fs/spec/data/test3"
-                           ]
+                            "data",
+                            "data/b",
+                            "data/b/b",
+                            "data/b/x",
+                            "data/b/a",
+                            "data/c",
+                            "data/c/a",
+                            "data/test2",
+                            "data/test",
+                            "data/a",
+                            "data/a/x",
+                            "data/test3"
+                           ].map {|e| File.join(SPEC_ROOT, e)}
       end
     end
 
@@ -104,24 +104,24 @@ describe EM::Dir::Glob do
 
       it 'should execute the block for each entry in tree' do
         @entries.should == [
-                            "/home/arthur/projects/em-fs/spec/data",
-                            "/home/arthur/projects/em-fs/spec/data/b",
-                            "/home/arthur/projects/em-fs/spec/data/b/b",
-                            "/home/arthur/projects/em-fs/spec/data/b/x",
-                            "/home/arthur/projects/em-fs/spec/data/b/a",
-                            "/home/arthur/projects/em-fs/spec/data/b/a/x",
-                            "/home/arthur/projects/em-fs/spec/data/b/a/z",
-                            "/home/arthur/projects/em-fs/spec/data/b/a/y",
-                            "/home/arthur/projects/em-fs/spec/data/c",
-                            "/home/arthur/projects/em-fs/spec/data/c/a",
-                            "/home/arthur/projects/em-fs/spec/data/c/a/b",
-                            "/home/arthur/projects/em-fs/spec/data/c/a/a",
-                            "/home/arthur/projects/em-fs/spec/data/test2",
-                            "/home/arthur/projects/em-fs/spec/data/test",
-                            "/home/arthur/projects/em-fs/spec/data/a",
-                            "/home/arthur/projects/em-fs/spec/data/a/x",
-                            "/home/arthur/projects/em-fs/spec/data/test3"
-                           ]
+                            "data",
+                            "data/b",
+                            "data/b/b",
+                            "data/b/x",
+                            "data/b/a",
+                            "data/b/a/x",
+                            "data/b/a/z",
+                            "data/b/a/y",
+                            "data/c",
+                            "data/c/a",
+                            "data/c/a/b",
+                            "data/c/a/a",
+                            "data/test2",
+                            "data/test",
+                            "data/a",
+                            "data/a/x",
+                            "data/test3"
+                           ].map {|e| File.join(SPEC_ROOT, e)}
       end
     end
   end
@@ -163,24 +163,24 @@ describe EM::Dir::Glob do
 
     it 'should execute a block with full path for each entry' do
         @entries.should == [
-                            "/home/arthur/projects/em-fs/spec/data",
-                            "/home/arthur/projects/em-fs/spec/data/b",
-                            "/home/arthur/projects/em-fs/spec/data/b/b",
-                            "/home/arthur/projects/em-fs/spec/data/b/x",
-                            "/home/arthur/projects/em-fs/spec/data/b/a",
-                            "/home/arthur/projects/em-fs/spec/data/b/a/x",
-                            "/home/arthur/projects/em-fs/spec/data/b/a/z",
-                            "/home/arthur/projects/em-fs/spec/data/b/a/y",
-                            "/home/arthur/projects/em-fs/spec/data/c",
-                            "/home/arthur/projects/em-fs/spec/data/c/a",
-                            "/home/arthur/projects/em-fs/spec/data/c/a/b",
-                            "/home/arthur/projects/em-fs/spec/data/c/a/a",
-                            "/home/arthur/projects/em-fs/spec/data/test2",
-                            "/home/arthur/projects/em-fs/spec/data/test",
-                            "/home/arthur/projects/em-fs/spec/data/a",
-                            "/home/arthur/projects/em-fs/spec/data/a/x",
-                            "/home/arthur/projects/em-fs/spec/data/test3"
-                           ]
+                            "data",
+                            "data/b",
+                            "data/b/b",
+                            "data/b/x",
+                            "data/b/a",
+                            "data/b/a/x",
+                            "data/b/a/z",
+                            "data/b/a/y",
+                            "data/c",
+                            "data/c/a",
+                            "data/c/a/b",
+                            "data/c/a/a",
+                            "data/test2",
+                            "data/test",
+                            "data/a",
+                            "data/a/x",
+                            "data/test3"
+                           ].map {|e| File.join(SPEC_ROOT, e)}
       end
   end
 end
