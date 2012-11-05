@@ -401,8 +401,8 @@ describe EM::FileUtils do
     it 'should invoke `chown`' do
       EM.run do
         @dir = File.join(SPEC_ROOT, 'data', 'test')
-        cmd = EM::FileUtils.chown 'arthur', 'users', '/usr/bin/test'
-        cmd.command.should == 'chown arthur:users /usr/bin/test'
+        cmd = EM::FileUtils.chown 'nobody', 'users', '/usr/bin/test'
+        cmd.command.should == 'chown nobody:users /usr/bin/test'
         EM.stop_event_loop
       end
     end
@@ -412,8 +412,8 @@ describe EM::FileUtils do
     it 'should invoke `chown -r`' do
       EM.run do
         @dir = File.join(SPEC_ROOT, 'data', 'test')
-        cmd = EM::FileUtils.chown_R 'arthur', 'users', '/usr/bin/test'
-        cmd.command.should == 'chown -R arthur:users /usr/bin/test'
+        cmd = EM::FileUtils.chown_R 'nobody', 'users', '/usr/bin/test'
+        cmd.command.should == 'chown -R nobody:users /usr/bin/test'
         EM.stop_event_loop
       end
     end
