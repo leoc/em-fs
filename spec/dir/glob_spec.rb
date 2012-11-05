@@ -9,8 +9,8 @@ describe EM::Dir::Glob do
     files = [ 'a/x', 'b/x', 'b/a/x', 'b/a/y', 'b/a/z' ].map { |p|
       File.join(SPEC_ROOT, 'data', p)
     }
-    FileUtils.touch files
     FileUtils.mkdir_p dirs
+    FileUtils.touch files
   end
 
   describe '#find_command' do
@@ -42,7 +42,7 @@ describe EM::Dir::Glob do
       end
 
       it 'should execute the block for each entry' do
-        @entries.should == [
+        @entries.should =~ [
                             "data",
                             "data/b",
                             "data/c",
@@ -70,7 +70,7 @@ describe EM::Dir::Glob do
       end
 
       it 'should execute the block for each entry and directory´s entry' do
-        @entries.should == [
+        @entries.should =~ [
                             "data",
                             "data/b",
                             "data/b/b",
@@ -103,7 +103,7 @@ describe EM::Dir::Glob do
       end
 
       it 'should execute the block for each entry in tree' do
-        @entries.should == [
+        @entries.should =~ [
                             "data",
                             "data/b",
                             "data/b/b",
@@ -142,7 +142,7 @@ describe EM::Dir::Glob do
     end
 
     it 'should execute a block with file name for each entry' do
-        @entries.should == [ "data", "b", "c", "test2", "test", "a", "test3" ]
+        @entries.should =~ [ "data", "b", "c", "test2", "test", "a", "test3" ]
       end
   end
 
@@ -162,7 +162,7 @@ describe EM::Dir::Glob do
     end
 
     it 'should execute a block with full path for each entry' do
-        @entries.should == [
+        @entries.should =~ [
                             "data",
                             "data/b",
                             "data/b/b",
