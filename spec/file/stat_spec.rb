@@ -4,7 +4,7 @@ describe EM::File::Stat do
   describe '.parse' do
     context 'parsed stat' do
       subject do
-        EM::File::Stat.parse "644 2050 'regular file' 100 1 2623327 '/home/arthur/test' 218759168 1000 1340357826 1340357846 1340357846"
+        EM::File::Stat.parse "644 2050 'regular file' #{Process::GID.eid} 1 2623327 '/home/arthur/test' 218759168 #{Process::UID.eid} 1340357826 1340357846 1340357846"
       end
 
       its(:atime) { should == Time.at(1340357826) }
@@ -17,7 +17,7 @@ describe EM::File::Stat do
       its(:executable_real?) { should == false }
       its(:file?) { should == true }
       its(:ftype) { should == EM::File::Stat::S_IFREG }
-      its(:gid) { should == 100 }
+      its(:gid) { should == Process::GID.eid }
       its(:grpowned?) { should == true }
       its(:ino) { should == 2623327 }
       its(:mode) { should == '644' }
@@ -30,7 +30,7 @@ describe EM::File::Stat do
       its(:size) { should == 218759168 }
       its(:socket?) { should == false }
       its(:symlink?) { should == false }
-      its(:uid) { should == 1000 }
+      its(:uid) { should == Process::UID.eid }
       its(:world_readable?) { should == 420 }
       its(:world_writable?) { should == nil }
       its(:writable?) { should == true }
