@@ -9,8 +9,8 @@ describe EM::Dir::Glob do
     files = [ 'a/x', 'b/x', 'b/a/x', 'b/a/y', 'b/a/z' ].map { |p|
       File.join(SPEC_ROOT, 'data', p)
     }
-    FileUtils.touch files
     FileUtils.mkdir_p dirs
+    FileUtils.touch files
   end
 
   describe '#find_command' do
