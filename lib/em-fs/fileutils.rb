@@ -73,6 +73,17 @@ module EventMachine
       end
 
       ##
+      # Copy files using pv with progress information
+      def pv_cp *args, &block
+        unless args.length >= 2
+          raise 'Too few arguments. Need source and destination at least.'
+        end
+
+        cmd = EM::SystemCommand.new 'sh', :c, "pv -b #{Escape.shell_single_word(args[0])} > #{Escape.shell_single_word(args[1])}"
+        cmd.execute &block
+      end
+
+      ##
       # Move files or directories.
       def mv *args, &block
         options = { recursive: false }.merge args.extract_options!

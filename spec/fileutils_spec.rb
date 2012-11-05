@@ -220,6 +220,35 @@ describe EM::FileUtils do
     end
   end
 
+  describe '.pv_cp' do
+
+    context 'copying one file' do
+      before :all do
+        @source = File.join SPEC_ROOT, 'data', 'test'
+        @target = File.join SPEC_ROOT, 'data', 'test.copy'
+        EM.run do
+          EM::FileUtils.pv_cp @source, @target do |on|
+            on.exit do |status|
+              EM.stop_event_loop
+              raise on.stderr.output if status.exitstatus != 0
+            end
+            on.stderr.line do |line|
+              puts line
+            end
+          end
+        end
+      end
+
+      after :all do
+        FileUtils.rm_rf @target
+      end
+
+      it 'should create a copy' do
+        File.should exist @target
+      end
+    end
+  end
+
   describe '.mv' do
     context 'moving one file' do
       before :all do
