@@ -12,6 +12,8 @@ EventMachine.instance_eval do
   end
 end unless EM.respond_to?(:assertions)
 
+system("cd #{SPEC_ROOT}/data; mkdir -p a b/a b/b c/a/{a,b}")
+system("cd #{SPEC_ROOT}/data; touch {a,b}/x b/a/{x,y,z}")
 unless File.exists?(File.join(SPEC_ROOT, 'data', 'test')) and
     File.exists?(File.join(SPEC_ROOT, 'data', 'test2')) and
     File.exists?(File.join(SPEC_ROOT, 'data', 'test3'))

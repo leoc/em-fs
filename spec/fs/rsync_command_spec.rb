@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe EM::FS::RsyncCommand do
   context 'copying one file' do
-    before :all do
+    before :each do
       @source = File.join SPEC_ROOT, 'data', 'test'
       @target = File.join SPEC_ROOT, 'data', 'test.copy'
       @progress_updates = {}
@@ -20,7 +20,7 @@ describe EM::FS::RsyncCommand do
       end
     end
 
-    after :all do
+    after :each do
       FileUtils.rm_rf @target
     end
 
@@ -35,7 +35,7 @@ describe EM::FS::RsyncCommand do
   end
 
   context 'copying multiple files' do
-    before :all do
+    before :each do
       @source1 = File.join SPEC_ROOT, 'data', 'test'
       @source2 = File.join SPEC_ROOT, 'data', 'test2'
       @source3 = File.join SPEC_ROOT, 'data', 'test3'
@@ -55,7 +55,7 @@ describe EM::FS::RsyncCommand do
       end
     end
 
-    after :all do
+    after :each do
       FileUtils.rm_rf @target
     end
 
