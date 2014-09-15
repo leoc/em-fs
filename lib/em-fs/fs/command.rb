@@ -3,7 +3,7 @@ module EventMachine
   class FS
     class Command < EM::SystemCommand
 
-      PROGRESS_REGEXP = /([A-Za-z0-9\.\-\/]+)\n[ ]+(\d+)/.freeze
+      PROGRESS_REGEXP = /([A-Za-z0-9\.,\-\/]+)\n[ ]+([^ ]+)/.freeze
 
       ##
       # Invokes `#execute` of super-class and adds a progress matcher.
@@ -11,7 +11,7 @@ module EventMachine
         super &block
 
         stdout.match PROGRESS_REGEXP, match: :last, in: :output do |file, bytes|
-          receive_progress file, bytes.to_i
+          receive_progress file, bytes.gsub(/[^\d]/,'').to_i
         end
 
         self
@@ -48,10 +48,6 @@ module EventMachine
       private
       def progress_callbacks
         @progress_callbacks ||= []
-      end
-
-      def progress_regexp
-        @progress_regexp ||= /([A-Za-z0-9\.\-\/]+)\n[ ]+(\d+)/.freeze
       end
     end
   end
