@@ -1,7 +1,6 @@
 module EventMachine
   class File
     class Stat
-
       STAT_REGEX = /(\d+) (\d+) '([\w\/ ]+)' (\d+) (\d+) (\d+) '(.+)' (\d+) (\d+) ([\d.]+) ([\d.]+) ([\d.]+)/.freeze
 
       # access rights octal
@@ -36,6 +35,15 @@ module EventMachine
       S_IFREG   = 0b00100000 # regular file
       S_IFSOCK  = 0b01000000 # socket
       S_UNKNOWN = 0b10000000 # unknown
+      TYPE_MAPPING = {
+        'block device' => S_IFBLK,
+        'character device' => S_IFCHR,
+        'directory' => S_IFDIR,
+        'FIFO/pipe' => S_IFIFO,
+        'symlink' => S_IFLNK,
+        'regular file' => S_IFREG,
+        'socket' => S_IFSOCK
+      }
 
       # Mode Flags
       S_IRUSR   = 0b100000000
@@ -57,22 +65,11 @@ module EventMachine
         # @return [EM::File::Stat] The file stat object.
         def parse str
           if m = str.match(STAT_REGEX)
-            ftype = case m[3]
-                    when 'block device' then S_IFBLK
-                    when 'character device' then S_IFCHR
-                    when 'directory' then S_IFDIR
-                    when 'FIFO/pipe' then S_IFIFO
-                    when 'symlink' then S_IFLNK
-                    when 'regular file' then S_IFREG
-                    when 'socket' then S_IFSOCK
-                    else
-                      S_UNKNOWN
-                    end
             EM::File::Stat.new path:  m[7],
                                atime: Time.at(Integer(m[10].split('.')[0], 10)),
                                ctime: Time.at(Integer(m[12].split('.')[0], 10)),
                                dev:   Integer(m[2], 10),
-                               ftype: ftype,
+                               ftype: (TYPE_MAPPING[m[3]] || S_UNKNOWN),
                                gid:   Integer(m[4], 10),
                                ino:   Integer(m[6], 10),
                                mode:  Integer(m[1], 8),
@@ -117,17 +114,27 @@ module EventMachine
       end
 
       def executable?
-        return true if Process::UID.rid == 0
-        return @mode & S_IXUSR != 0 if rowned?
-        return @mode & S_IXGRP != 0 if rgrpowned?
-        @mode & S_IXOTH != 0
+        if Process::UID.rid == 0
+          true
+        elsif rowned?
+          @mode & S_IXUSR != 0
+        elsif rgrpowned?
+          @mode & S_IXGRP != 0
+        else
+          @mode & S_IXOTH != 0
+        end
       end
 
       def executable_real?
-        return true if Process::UID.rid == 0
-        return @mode & S_IXUSR != 0 if rowned?
-        return @mode & S_IXGRP != 0 if rgrpowned?
-        @mode & S_IXOTH != 0
+        if Process::UID.rid == 0
+          true
+        elsif rowned?
+          @mode & S_IXUSR != 0
+        elsif rgrpowned?
+          @mode & S_IXGRP != 0
+        else
+          @mode & S_IXOTH != 0
+        end
       end
 
       def file?
@@ -159,17 +166,27 @@ module EventMachine
       end
 
       def readable?
-        return true if Process::UID.eid == 0
-        return @mode & S_IRUSR != 0 if owned?
-        return @mode & S_IRGRP != 0 if grpowned?
-        @mode & S_IROTH != 0
+        if Process::UID.eid == 0
+          return true
+        elsif owned?
+          return @mode & S_IRUSR != 0
+        elsif grpowned?
+          return @mode & S_IRGRP != 0
+        else
+          @mode & S_IROTH != 0
+        end
       end
 
       def readable_real?
-        return true if Process::UID.rid == 0
-        return @mode & S_IRUSR != 0 if rowned?
-        return @mode & S_IRGRP != 0 if rgrpowned?
-        @mode & S_IROTH != 0
+        if Process::UID.rid == 0
+          true
+        elsif rowned?
+          @mode & S_IRUSR != 0
+        elsif rgrpowned?
+          @mode & S_IRGRP != 0
+        else
+          @mode & S_IROTH != 0
+        end
       end
 
       def socket?
@@ -189,23 +206,32 @@ module EventMachine
       end
 
       def writable?
-        return true if Process::UID.rid == 0
-        return @mode & S_IWUSR != 0 if owned?
-        return @mode & S_IWGRP != 0 if grpowned?
-        @mode & S_IWOTH != 0
+        if Process::UID.rid == 0
+          true
+        elsif owned?
+          @mode & S_IWUSR != 0
+        elsif grpowned?
+          @mode & S_IWGRP != 0
+        else
+          @mode & S_IWOTH != 0
+        end
       end
 
       def writable_real?
-        return true if Process::UID.rid == 0
-        return @mode & S_IWUSR != 0 if rowned?
-        return @mode & S_IWGRP != 0 if rgrpowned?
-        @mode & S_IWOTH != 0
+        if Process::UID.rid == 0
+          true
+        elsif rowned?
+          @mode & S_IWUSR != 0
+        elsif rgrpowned?
+          @mode & S_IWGRP != 0
+        else
+          @mode & S_IWOTH != 0
+        end
       end
 
       def zero?
         @size == 0
       end
-
     end
   end
 end
