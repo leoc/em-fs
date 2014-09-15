@@ -2,17 +2,6 @@
 require 'spec_helper'
 
 describe EM::Dir::Glob do
-  before :all do
-    dirs = [ 'a', 'b/a', 'b/b', 'c/a/a', 'c/a/b' ].map { |p|
-      File.join(SPEC_ROOT, 'data', p)
-    }
-    files = [ 'a/x', 'b/x', 'b/a/x', 'b/a/y', 'b/a/z' ].map { |p|
-      File.join(SPEC_ROOT, 'data', p)
-    }
-    FileUtils.mkdir_p dirs
-    FileUtils.touch files
-  end
-
   describe '#find_command' do
     it 'should parse relative pattern' do
       cmd = EM::Dir['./*.rb'].send :find_command
@@ -25,6 +14,32 @@ describe EM::Dir::Glob do
     end
   end
 
+  describe '#finish' do
+    it 'is called with an array of the matched file stat' do
+      @testEntries = []
+      pattern = File.join(SPEC_ROOT, 'data', '**', '*')
+      EM.run do
+        cmd = EM::Dir[pattern].each(depth: 1)
+        cmd.finish do |entries|
+          @testEntries = entries
+          EM.stop_event_loop
+        end
+      end
+      @testEntries.each do |stat|
+        stat.should be_a EM::File::Stat
+      end
+      @testEntries.map(&:path).should =~ [
+        'data',
+        'data/b',
+        'data/c',
+        'data/test2',
+        'data/test',
+        'data/a',
+        'data/test3'
+      ].map {|e| File.join(SPEC_ROOT, e)}
+    end
+  end
+
   describe '#each' do
     context 'with depth = 0' do
       before :all do
@@ -34,8 +49,7 @@ describe EM::Dir::Glob do
           cmd = EM::Dir[pattern].each depth: 1 do |entry|
             @entries << entry.path
           end
-
-          cmd.exit do
+          cmd.finish do
             EM.stop_event_loop
           end
         end
@@ -62,8 +76,7 @@ describe EM::Dir::Glob do
           cmd = EM::Dir[pattern].each depth: 2 do |entry|
             @entries << entry.path
           end
-
-          cmd.exit do
+          cmd.finish do
             EM.stop_event_loop
           end
         end
@@ -95,8 +108,7 @@ describe EM::Dir::Glob do
           cmd = EM::Dir[pattern].each depth: :inf do |entry|
             @entries << entry.path
           end
-
-          cmd.exit do
+          cmd.finish do
             EM.stop_event_loop
           end
         end
@@ -134,8 +146,7 @@ describe EM::Dir::Glob do
         cmd = EM::Dir[pattern].each_entry do |entry|
           @entries << entry
         end
-
-        cmd.exit do
+        cmd.finish do
           EM.stop_event_loop
         end
       end
@@ -154,8 +165,7 @@ describe EM::Dir::Glob do
         cmd = EM::Dir[pattern].each_path do |path|
           @entries << path
         end
-
-        cmd.exit do
+        cmd.finish do
           EM.stop_event_loop
         end
       end

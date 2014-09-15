@@ -7,12 +7,12 @@ module EventMachine
       def initialize pattern
         @weight = nil
         @type = nil
-        @callback = proc{}
+        @finished_callbacks = []
         parse pattern
       end
 
-      def callback &block
-        @callback = block
+      def finish &block
+        @finished_callbacks << block
       end
 
       def parse pattern
@@ -45,13 +45,19 @@ module EventMachine
         }.merge options
 
         EM::SystemCommand.execute find_command(options) do |on|
+          stats = []
           on.stdout.line do |line|
-            block.call File::Stat.parse line
+            stat = File::Stat.parse(line)
+            stats << stat
+            block.call(stat) if block
           end
           on.success do
-            @callback.call
+            @finished_callbacks.each do |callback|
+              callback.call(stats)
+            end
           end
         end
+        self
       end
 
       def each_entry options = {}, &block
