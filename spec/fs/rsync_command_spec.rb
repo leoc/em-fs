@@ -1,15 +1,19 @@
 require 'spec_helper'
 
-describe EM::FS::RsyncCommand do
+describe EM::FS::RsyncCommand, focus: true do
   context 'copying one file' do
     before :each do
       @source = File.join SPEC_ROOT, 'data', 'test'
       @target = File.join SPEC_ROOT, 'data', 'test.copy'
-      @progress_updates = {}
+      @progress_updates   = {}
+      @percentage_updates = {}
+      @speed_updates      = {}
       EM.run do
         EM::FS.rsync @source, @target do |on|
-          on.progress do |file, bytes|
-            (@progress_updates[file] ||= []) << bytes
+          on.progress do |file, bytes, percentage, speed|
+            (@progress_updates[file] ||= [])   << bytes
+            (@percentage_updates[file] ||= []) << percentage
+            (@speed_updates[file] ||= [])      << speed
           end
 
           on.exit do |status|
@@ -31,6 +35,18 @@ describe EM::FS::RsyncCommand do
     it 'should track progress' do
       @progress_updates['test'].length.should be > 0
       @progress_updates['test'].last.should == 102400
+    end
+
+    it 'should track percentages' do
+      @percentage_updates.values.flatten.each do |percentage|
+        percentage.should be_a Integer
+      end
+    end
+
+    it 'should track speed' do
+      @speed_updates.values.flatten.each do |speed|
+        speed.should be_a Float
+      end
     end
   end
 

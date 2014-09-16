@@ -2,16 +2,24 @@
 module EventMachine
   class FS
     class Command < EM::SystemCommand
-
-      PROGRESS_REGEXP = /([A-Za-z0-9\.,\-\/]+)\n[ ]+([^ ]+)/.freeze
+      PROGRESS_REGEXP = /([^\n]+)\n[ ]+([^ ]+)[ ]+(.+)%/.freeze
 
       ##
       # Invokes `#execute` of super-class and adds a progress matcher.
       def execute &block
         super &block
 
-        stdout.match PROGRESS_REGEXP, match: :last, in: :output do |file, bytes|
-          receive_progress file, bytes.gsub(/[^\d]/,'').to_i
+        last_progress    = 0
+        last_progress_at = Time.new.to_f
+        stdout.match PROGRESS_REGEXP, match: :last, in: :output do |file, total_bytes, percentage|
+          progress = total_bytes.gsub(/[^\d]/,'').to_i
+          progress_at = Time.new.to_f
+          speed = (progress - last_progress) / (progress_at - last_progress_at)
+
+          receive_progress(file, progress, percentage.to_i, speed)
+
+          last_progress    = progress
+          last_progress_at = progress_at
         end
 
         self
@@ -25,9 +33,9 @@ module EventMachine
       #
       # @param [String] file The file that´s been updated.
       # @param [Integer] bytes The bytes moved or copied.
-      def receive_progress file, bytes
+      def receive_progress *args
         progress_callbacks.each do |cb|
-          cb.call file, bytes
+          cb.call(*args)
         end
       end
 
